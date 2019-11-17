@@ -16,7 +16,9 @@
         !calcFormControl.hasError('required')
       "
     >
-      Please add newline by going to new line with return key
+      No Negative Numbers Please: [<span *ngFor="let num of showDenied()"
+        >{{ num }},</span
+      >]
     </mat-error>
     <mat-error *ngIf="calcFormControl.hasError('required')">
       Numbers are <strong>required</strong>

@@ -94,4 +94,19 @@ describe("CalcFormComponent", () => {
     component.calculate();
     expect(component.calculationResult).toBe(6);
   });
+
+  /**********************
+   * Step 4 test suite
+   **********************/
+  it("#deniedNegativeNumbers should equal `[-3]`", () => {
+    component.calcFormControl.setValue("1,2,-3,4");
+    component.showDenied();
+    expect(component.deniedNegativeNumbers).toEqual([-3]);
+  });
+
+  it("#deniedNegativeNumbers should equal `[-3,6]`", () => {
+    component.calcFormControl.setValue("1,2,-3,4\n-6");
+    component.showDenied();
+    expect(component.deniedNegativeNumbers).toEqual([-3, -6]);
+  });
 });

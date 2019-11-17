@@ -1,14 +1,23 @@
 <form class="form-wrapper">
   <mat-form-field color="accent" class="full-width">
-    <input matInput placeholder="Calculator" [formControl]="calcFormControl" />
-    <!-- <mat-error
+    <textarea
+      matInput
+      cols="30"
+      rows="5"
+      placeholder="Calculator"
+      [formControl]="calcFormControl"
+    ></textarea>
+    <mat-hint
+      >Please add newline by going to new line with return key not (\n)
+    </mat-hint>
+    <mat-error
       *ngIf="
         calcFormControl.hasError('pattern') &&
         !calcFormControl.hasError('required')
       "
     >
-      Please enter a max of two numbers
-    </mat-error> -->
+      Please add newline by going to new line with return key
+    </mat-error>
     <mat-error *ngIf="calcFormControl.hasError('required')">
       Numbers are <strong>required</strong>
     </mat-error>

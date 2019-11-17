@@ -85,4 +85,13 @@ describe("CalcFormComponent", () => {
     component.calculate();
     expect(component.calculationResult).toBe(78);
   });
+
+  /**********************
+   * Step 3 test suite
+   **********************/
+  it("#Calculation should be 6 (1\\n2,3)", () => {
+    component.calcFormControl.setValue("1\n2,3");
+    component.calculate();
+    expect(component.calculationResult).toBe(6);
+  });
 });

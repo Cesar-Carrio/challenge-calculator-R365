@@ -10,9 +10,10 @@ export class CalcFormComponent implements OnInit {
   // Creating reactive form and validators
   calcFormControl = new FormControl("", [
     Validators.required,
-    Validators.pattern(/\-?(\d|\w)*(,?)\-?(\d|\w)*/)
+    Validators.pattern(/\-?(\d|\w)*((,|\n)?)\-?(\d|\w)*/)
   ]);
-  // Validators.pattern(/^\-?(\d|\w)*(,?)\-?(\d|\w)*$/)
+  // Validators.pattern(/^\-?(\d|\w)*(,?)\-?(\d|\w)*$/) ------ Step 1
+  //  Validators.pattern(/\-?(\d|\w)*(,?)\-?(\d|\w)*/) ------- Step 2
 
   calculationResult: number; // End result for calculation
 
@@ -22,7 +23,7 @@ export class CalcFormComponent implements OnInit {
 
   calculate() {
     const inputValue: string = this.calcFormControl.value;
-    const parsedStringValues = inputValue.split(",");
+    const parsedStringValues = inputValue.split(/[\n,]/);
     const parsedNumberValues = parsedStringValues.map((value: string) => {
       return isNaN(+value) ? 0 : +value;
     });

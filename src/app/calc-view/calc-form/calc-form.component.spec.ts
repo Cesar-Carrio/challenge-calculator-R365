@@ -63,19 +63,19 @@ describe("CalcFormComponent", () => {
     expect(component.calculationResult).toBe(5);
   });
 
-  it("#Calculation should equal to 5001 - (1,5000)", () => {
-    component.calcFormControl.setValue("1,5000");
-    component.calculate();
-    expect(component.calculationResult).toBe(5001);
-  });
+  // it("#Calculation should equal to 5001 - (1,5000)", () => {
+  //   component.calcFormControl.setValue("1,5000");
+  //   component.calculate();
+  //   expect(component.calculationResult).toBe(5001);
+  // });
 
-  it("#Calculation header should be 5001", () => {
-    component.calcFormControl.setValue("1,5000");
-    component.calculate();
-    fixture.detectChanges();
-    const h1 = de.query(By.css("h1"));
-    expect(h1.nativeElement.innerText).toBe("5001");
-  });
+  // it("#Calculation header should be 5001", () => {
+  //   component.calcFormControl.setValue("1,5000");
+  //   component.calculate();
+  //   fixture.detectChanges();
+  //   const h1 = de.query(By.css("h1"));
+  //   expect(h1.nativeElement.innerText).toBe("5001");
+  // });
 
   /**********************
    * Step 2 test suite
@@ -108,5 +108,14 @@ describe("CalcFormComponent", () => {
     component.calcFormControl.setValue("1,2,-3,4\n-6");
     component.showDenied();
     expect(component.deniedNegativeNumbers).toEqual([-3, -6]);
+  });
+
+  /**********************
+   * Step 5 test suite
+   **********************/
+  it("#calculationResult should equal to `8`", () => {
+    component.calcFormControl.setValue("2,1001,6");
+    component.calculate();
+    expect(component.calculationResult).toBe(8);
   });
 });

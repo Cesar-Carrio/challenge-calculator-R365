@@ -12,8 +12,6 @@ export class CalcFormComponent implements OnInit {
     Validators.required,
     Validators.pattern(/^(\d*(((,|\n)?)\d*)*)?$/)
   ]);
-  // Validators.pattern(/^\-?(\d|\w)*(,?)\-?(\d|\w)*$/) ------ Step 1
-  // Validators.pattern(/\-?(\d|\w)*(,?)\-?(\d|\w)*/) -------  Step 2
   // Validators.pattern(/\-?(\d|\w)*((,|\n)?)\-?(\d|\w)*/) --- Step 3
 
   calculationResult: number; // End result for calculation
@@ -25,26 +23,34 @@ export class CalcFormComponent implements OnInit {
 
   showDenied() {
     this.deniedNegativeNumbers = this.parsingHelperFunction(
-      this.calcFormControl.value
-    ).filter(num => num < 0);
+      this.calcFormControl.value,
+      "showDenied"
+    );
     return this.deniedNegativeNumbers;
   }
 
   calculate() {
     const tempCalculationResult = this.parsingHelperFunction(
-      this.calcFormControl.value
+      this.calcFormControl.value,
+      "calculate"
     ).reduce((accumVal, currVal) => {
       return accumVal + currVal; // adding values in array
     });
     this.calculationResult = tempCalculationResult; // setting final calculation result
   }
 
-  parsingHelperFunction(input: string) {
+  parsingHelperFunction(input: string, funcCallee: string) {
     const inputValue: string = input;
     const parsedStringValues = inputValue.split(/[\n,]/);
-    const parsedNumberValues = parsedStringValues.map((value: string) => {
+    let parsedNumberValues = parsedStringValues.map((value: string) => {
       return isNaN(+value) ? 0 : +value;
     });
+
+    if (funcCallee === "calculate") {
+      parsedNumberValues = parsedNumberValues.filter(value => value <= 1000);
+    } else {
+      parsedNumberValues = parsedNumberValues.filter(value => value < 0);
+    }
 
     return parsedNumberValues;
   }

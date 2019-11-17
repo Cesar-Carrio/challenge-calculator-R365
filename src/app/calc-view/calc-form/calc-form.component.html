@@ -1,14 +1,14 @@
 <form class="form-wrapper">
   <mat-form-field color="accent" class="full-width">
     <input matInput placeholder="Calculator" [formControl]="calcFormControl" />
-    <mat-error
+    <!-- <mat-error
       *ngIf="
         calcFormControl.hasError('pattern') &&
         !calcFormControl.hasError('required')
       "
     >
       Please enter a max of two numbers
-    </mat-error>
+    </mat-error> -->
     <mat-error *ngIf="calcFormControl.hasError('required')">
       Numbers are <strong>required</strong>
     </mat-error>

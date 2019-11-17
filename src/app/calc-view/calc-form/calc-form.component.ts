@@ -10,8 +10,9 @@ export class CalcFormComponent implements OnInit {
   // Creating reactive form and validators
   calcFormControl = new FormControl("", [
     Validators.required,
-    Validators.pattern(/^\-?(\d|\w)*(,?){1}\-?(\d|\w)*$/)
+    Validators.pattern(/\-?(\d|\w)*(,?)\-?(\d|\w)*/)
   ]);
+  // Validators.pattern(/^\-?(\d|\w)*(,?)\-?(\d|\w)*$/)
 
   calculationResult: number; // End result for calculation
 

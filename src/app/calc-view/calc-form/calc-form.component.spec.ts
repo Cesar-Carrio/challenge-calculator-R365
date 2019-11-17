@@ -38,10 +38,18 @@ describe("CalcFormComponent", () => {
     fixture.detectChanges();
   });
 
+  /**********************
+   * Step 1 test suite
+   **********************/
+
+  /*******************************
+   * This Test is only for step 1
+   * ===========================
   it("#calcFormControl.valid should be false - (1,2,3)", () => {
     component.calcFormControl.setValue("1,2,3");
     expect(component.calcFormControl.valid).toBeFalsy();
   });
+  *******************************/
 
   it("#Calculation should equal to 20 - (20)", () => {
     component.calcFormControl.setValue("20");
@@ -67,5 +75,14 @@ describe("CalcFormComponent", () => {
     fixture.detectChanges();
     const h1 = de.query(By.css("h1"));
     expect(h1.nativeElement.innerText).toBe("5001");
+  });
+
+  /**********************
+   * Step 2 test suite
+   **********************/
+  it("#Calculation should equal to 78 - (1,2,3,4,5,6,7,8,9,10,11,12)", () => {
+    component.calcFormControl.setValue("1,2,3,4,5,6,7,8,9,10,11,12");
+    component.calculate();
+    expect(component.calculationResult).toBe(78);
   });
 });

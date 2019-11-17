@@ -118,4 +118,21 @@ describe("CalcFormComponent", () => {
     component.calculate();
     expect(component.calculationResult).toBe(8);
   });
+
+  /**********************
+   * Step 6 test suite
+   **********************/
+  it("Should Support 1 custom delimiter of a single character using the format: //{delimiter}\\n{numbers} - (//#\\n2#5)", () => {
+    component.calcFormControl.setValue("//#\n2#5");
+    fixture.detectChanges();
+    component.calculate();
+    expect(component.calculationResult).toBe(7);
+  });
+
+  it("Should Support 1 custom delimiter of a single character using the format: //{delimiter}\\n{numbers} - (//,\\n2,ff,100)", () => {
+    component.calcFormControl.setValue("//,\n2,ff,100");
+    fixture.detectChanges();
+    component.calculate();
+    expect(component.calculationResult).toBe(102);
+  });
 });

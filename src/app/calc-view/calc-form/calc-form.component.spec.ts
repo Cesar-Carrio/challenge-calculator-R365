@@ -119,9 +119,6 @@ describe("CalcFormComponent", () => {
     expect(component.calculationResult).toBe(8);
   });
 
-  /**********************
-   * Step 6 test suite
-   **********************/
   it("Should Support 1 custom delimiter of a single character using the format: //{delimiter}\\n{numbers} - (//#\\n2#5)", () => {
     component.calcFormControl.setValue("//#\n2#5");
     fixture.detectChanges();
@@ -134,5 +131,22 @@ describe("CalcFormComponent", () => {
     fixture.detectChanges();
     component.calculate();
     expect(component.calculationResult).toBe(102);
+  });
+
+  /**********************
+   * Step 6 test suite
+   **********************/
+  it("//[***]\\n11***22***33 should return 66", () => {
+    component.calcFormControl.setValue("//[***]\n11***22***33");
+    fixture.detectChanges();
+    component.calculate();
+    expect(component.calculationResult).toBe(66);
+  });
+
+  it("//[***]\\n11***22,33\\n1 should return 67 with old patterns as well", () => {
+    component.calcFormControl.setValue("//[***]\n11***22,33\n1");
+    fixture.detectChanges();
+    component.calculate();
+    expect(component.calculationResult).toBe(67);
   });
 });

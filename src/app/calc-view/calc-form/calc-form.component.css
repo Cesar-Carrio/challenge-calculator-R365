@@ -1,16 +1,13 @@
 .form-wrapper {
-  padding: 20px;
-  border-radius: 5px;
+  padding: 30px;
+  border-radius: 20px;
   min-width: 150px;
   max-width: 500px;
+  max-height: 600px;
   width: 100%;
   font-size: 2rem;
   background: #000000; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to top,
-    #434343,
-    #000000
-  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(to top, #434343, #000000); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
     to top,
     #434343,
@@ -19,6 +16,7 @@
 }
 
 .full-width {
+  height: 50vh;
   width: 100%;
 }
 

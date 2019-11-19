@@ -1,6 +1,13 @@
 import { Component, OnInit } from "@angular/core";
 import { FormControl, Validators } from "@angular/forms";
 
+export interface CreatingCustomDelimiterObject {
+  inputValue: string;
+  singleCharTestMatches: boolean;
+  multiCharTestMatches: boolean;
+  multiSetCharTestMatches: boolean;
+}
+
 @Component({
   selector: "app-calc-form",
   templateUrl: "./calc-form.component.html",
@@ -10,8 +17,9 @@ export class CalcFormComponent implements OnInit {
   calculationResult: number; // End result for calculation
   deniedNegativeNumbers = []; // Array of denied negative numbers
   customTokenDelimiter: string;
+  customSetTokenDelimiter: string[];
   unParsedCalculationString: string;
-  regexString: string = `^((\\d|\\w)*(((,|\\n)?)(\\d|\\w)*)*)?$`;
+  regexString: string = `^((\\d|\\w)*(((,|\\n)?)(\\d|\\w)*)*)?$`; // Default form validator
   newCustomDelimiterRegex: RegExp = null;
   customDelimiterMarker: boolean;
 
@@ -27,24 +35,48 @@ export class CalcFormComponent implements OnInit {
   onChanges() {
     this.calcFormControl.valueChanges.subscribe((val: string) => {
       const singleCharCustomDelimiter: RegExp = new RegExp(/^\/\/.\n/); // Single Char Custom Delimiter
-      const multiCharCustomDelimiter: RegExp = new RegExp(/^\/\/\[.*\]\n+/); // {N} Char Custom Delimiter
+      const multiCharCustomDelimiter: RegExp = new RegExp(/^\/\/\[.*\]\n/); // {N} Char Custom Delimiter
+      const multiSetCharCustomDelimter: RegExp = new RegExp(/\/\/\[(.*)\]\n+/); // [M] sets of {N} Chars Custom Delimiters
+
       const singleCharMatches = val.match(singleCharCustomDelimiter);
       const multiCharMatches = val.match(multiCharCustomDelimiter);
+      const multiSetCharMatches = val.match(multiSetCharCustomDelimter);
+
       let singleCharTestMatches: boolean = false;
       let multiCharTestMatches: boolean = false;
+      let multiSetCharTestMatches: boolean = false;
+
+      let bracketCount: number = 0;
+      if (multiCharMatches || multiSetCharMatches) {
+        for (const char of multiSetCharMatches.input) {
+          if (char === "[" || char === "]") {
+            bracketCount++;
+          }
+        }
+      }
 
       if (singleCharMatches) {
         singleCharTestMatches = singleCharCustomDelimiter.test(singleCharMatches[0] ? singleCharMatches[0] : "");
       }
 
-      if (multiCharMatches) {
+      if (multiCharMatches && bracketCount === 2) {
         multiCharTestMatches = multiCharCustomDelimiter.test(multiCharMatches[0] ? multiCharMatches[0] : "");
       }
 
-      if (singleCharTestMatches || multiCharTestMatches) {
+      if (multiSetCharMatches && bracketCount > 2) {
+        multiSetCharTestMatches = multiSetCharCustomDelimter.test(multiSetCharMatches[0] ? multiSetCharMatches[0] : "");
+      }
+
+      if (singleCharTestMatches || multiCharTestMatches || multiSetCharTestMatches) {
         // Creating Custom Delimitors and Validators
         this.customDelimiterMarker = true;
-        this.creatingCustomDelimiter(val, singleCharTestMatches, multiCharTestMatches);
+        const creatingCustomDelimiterObject: CreatingCustomDelimiterObject = {
+          inputValue: val,
+          singleCharTestMatches,
+          multiCharTestMatches,
+          multiSetCharTestMatches
+        };
+        this.creatingCustomDelimiter(creatingCustomDelimiterObject);
       } else {
         // Resetting Pattern Validator
         this.customDelimiterMarker = false;
@@ -53,12 +85,63 @@ export class CalcFormComponent implements OnInit {
     });
   }
 
-  creatingCustomDelimiter(inputValue: string, singleCharTestMatches: boolean, multiCharTestMatches: boolean) {
-    if (singleCharTestMatches) {
-      this.singleCharDelimiterHelper(inputValue);
-    } else if (multiCharTestMatches) {
-      this.multiCharDelimiterHelper(inputValue);
+  creatingCustomDelimiter(values: CreatingCustomDelimiterObject) {
+    if (values.singleCharTestMatches) {
+      this.singleCharDelimiterHelper(values.inputValue);
+    } else if (values.multiCharTestMatches) {
+      this.multiCharDelimiterHelper(values.inputValue);
+    } else if (values.multiSetCharTestMatches) {
+      this.multiSetCharDelimiter(values.inputValue);
     }
+  }
+
+  multiSetCharDelimiter(inputValue: string) {
+    // Parsing custom delimiter with [M] sets and {N} chars
+    // Getting custom delimiter
+    const splitParseValues: string[] = inputValue.split(/^\/{2}|\n/);
+    const arrayOfDelimiters: string[] = splitParseValues[1]
+      .split("]")
+      .join("")
+      .split("[")
+      .slice(1);
+
+    const { newRegexFormValidator, delimitersSetString } = this.createMultiSetValidator(arrayOfDelimiters);
+
+    // Setting new regex pattern validator for the input field
+    this.calcFormControl.setValidators([Validators.pattern(newRegexFormValidator)]);
+
+    if (this.customDelimiterMarker) {
+      // setting calculation string that needs to be parsed
+      this.unParsedCalculationString = splitParseValues.slice(2).join();
+      this.newCustomDelimiterRegex = new RegExp(`\\n|,${delimitersSetString}`, "g");
+      // At this point wait for user to click calculate to start parsing and give calculation
+    }
+  }
+
+  createMultiSetValidator(arrayOfDelimiters: string[]) {
+    let arrayOfValidParsedTokenDelimiters = [];
+    let validParsedTokenDelimiter: string = "";
+    for (let index = 0; index < arrayOfDelimiters.length; index++) {
+      for (const char of arrayOfDelimiters[index]) {
+        if (char.match(/\w+|\d+/)) {
+          validParsedTokenDelimiter += char;
+        } else {
+          validParsedTokenDelimiter += "\\" + char;
+        }
+      }
+      arrayOfValidParsedTokenDelimiters.push(validParsedTokenDelimiter);
+      validParsedTokenDelimiter = "";
+    }
+    this.customSetTokenDelimiter = arrayOfValidParsedTokenDelimiters;
+
+    let buildingRegexStart = "//";
+    let delimitersSetString = "";
+    for (const token of this.customSetTokenDelimiter) {
+      buildingRegexStart += "\\[" + token + "\\]";
+      delimitersSetString += "|" + token;
+    }
+    const newRegexFormValidator = `${buildingRegexStart}\\n+((\\d|\\w)*(((,|\\n|\\w+\\d+${delimitersSetString})?)(\\d|\\w)*)*)?`;
+    return { newRegexFormValidator, delimitersSetString };
   }
 
   singleCharDelimiterHelper(inputValue: string) {
@@ -92,7 +175,7 @@ export class CalcFormComponent implements OnInit {
   }
 
   multiCharDelimiterHelper(inputValue: string) {
-    // need to parse custom delimiter with {N} repitions
+    // parsing custom delimiter with {N} repitions
     // Getting custom delimiter
     const splitParseValues: string[] = inputValue.split(/^\/{2}|\n/);
     const regexExtractingDelimiter: RegExp = new RegExp(/[\[|\]]/g);
@@ -158,5 +241,11 @@ export class CalcFormComponent implements OnInit {
     }
 
     return parsedNumberValues;
+  }
+
+  trackByFn(index, item) {
+    // This function helps optimize UI rendering in
+    //  angular when creating dynamic ngfor renders
+    return item;
   }
 }

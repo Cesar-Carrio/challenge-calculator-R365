@@ -3,7 +3,7 @@
     <textarea matInput cols="30" rows="5" placeholder="Calculator" [formControl]="calcFormControl"></textarea>
     <mat-hint>Please add newline by going to new line with return key not (\n) </mat-hint>
     <mat-error *ngIf="calcFormControl.hasError('pattern') && !calcFormControl.hasError('required')">
-      No Negative Numbers Please: [<span *ngFor="let num of showDenied()">{{ num }},</span>]
+      No Negative Numbers Please: [<span *ngFor="let num of showDenied(); trackBy: trackByFn">{{ num }},</span>]
     </mat-error>
     <mat-error *ngIf="calcFormControl.hasError('required')"> Numbers are <strong>required</strong> </mat-error>
   </mat-form-field>

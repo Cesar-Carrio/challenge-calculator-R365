@@ -149,4 +149,14 @@ describe("CalcFormComponent", () => {
     component.calculate();
     expect(component.calculationResult).toBe(67);
   });
+
+  /**********************
+   * Step 6 test suite
+   **********************/
+  it("//[*][!!][r9r]\\n11r9r22*hh*33!!44 will return 110", () => {
+    component.calcFormControl.setValue("//[*][!!][r9r]\n11r9r22*hh*33!!44");
+    fixture.detectChanges();
+    component.calculate();
+    expect(component.calculationResult).toBe(110);
+  });
 });
